@@ -1,0 +1,3 @@
+base:
+  db_path: /Users/zhaoxin/Workspace/github.com/zhaoxin-BF/everai-test
+  volume_path: /Users/zhaoxin/Workspace/github.com/zhaoxin-BF/everai-test
