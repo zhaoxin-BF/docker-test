@@ -40,6 +40,9 @@ func GetStreamLogs() {
 	out, err := apiClient.ContainerLogs(context.Background(), containerID, types.ContainerLogsOptions{
 		ShowStdout: true,
 		Follow:     true,
+		Timestamps: true,
+		Since:      "2024-05-09T06:39:09.0Z",
+		Until:      "2024-05-09T06:39:15.0Z",
 	})
 	if err != nil {
 		panic(err)
@@ -73,7 +76,7 @@ func readAndPrintFrames(src io.ReadCloser) (err error) {
 }
 
 func CloseOut(src io.ReadCloser) {
-	time.Sleep(10 * time.Second)
+	time.Sleep(1000 * time.Second)
 	fmt.Println("close container stdout")
 	src.Close()
 	return

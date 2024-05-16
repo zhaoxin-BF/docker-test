@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/zhaoxin-BF/docker-test/container"
+	grafana_loki "github.com/zhaoxin-BF/docker-test/grafana-loki"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	//container.GetStreamLogs()
 	//container.ContainerStats()
 	//container.StreamRead()
-	container.ContainerTop()
+	//container.ContainerTop()
 
 	//device_resource.GetDeviceResource()
 
@@ -38,8 +38,11 @@ func main() {
 	// docker log
 	//docker_log.GetLog()
 
-	// loki log
-	//grafana_loki.GetLog()
+	//loki log
+	fmt.Println("-----------------------------------: loki get logs")
+	//grafana_loki.LokiTailLog()
+	grafana_loki.LokiGetLog()
+	//grafana_loki.PushLogIntoLoki()
 
 	// Get Location
 	//local_time.GetLocation()
