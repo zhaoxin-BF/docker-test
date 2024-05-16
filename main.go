@@ -42,6 +42,7 @@ func main() {
 	fmt.Println("-----------------------------------: loki get logs")
 	//grafana_loki.LokiTailLog()
 	grafana_loki.LokiGetLog()
+	grafana_loki.LokiGetLogRange()
 	//grafana_loki.PushLogIntoLoki()
 
 	// Get Location

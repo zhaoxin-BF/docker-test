@@ -30,7 +30,7 @@ type Metric struct {
 }
 
 func test(m Metric) {
-	metric := "everai_container_spec_cpu_percentage{containerName=\"worker-11\", workerId=\"worker-11\", appId=\"app-11\"} 57\n"
+	//metric := "everai_container_spec_cpu_percentage{containerName=\"worker-11\", workerId=\"worker-11\", appId=\"app-11\"} 57\n"
 }
 
 func formatMetric(m Metric) string {
