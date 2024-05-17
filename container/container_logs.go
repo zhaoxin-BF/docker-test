@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 	"io"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -39,10 +40,12 @@ func GetStreamLogs() {
 
 	out, err := apiClient.ContainerLogs(context.Background(), containerID, types.ContainerLogsOptions{
 		ShowStdout: true,
+		ShowStderr: true,
 		Follow:     true,
-		Timestamps: true,
-		Since:      "2024-05-09T06:39:09.0Z",
-		Until:      "2024-05-09T06:39:15.0Z",
+		//Timestamps: true,
+		Since: "2024-05-09T06:39:09.0Z",
+		//Until:      "2024-05-09T06:39:15.0Z",
+		//Tail: "172.17.0.1 - - [09/May/2024:06:39:13 +0000] \"GET / HTTP/1.0\" 200 615 \"-\" \"ApacheBench/2.3\" \"-\"",
 	})
 	if err != nil {
 		panic(err)
@@ -54,7 +57,7 @@ func GetStreamLogs() {
 }
 
 func readAndPrintFrames(src io.ReadCloser) (err error) {
-	buf := make([]byte, 32*1024)
+	buf := make([]byte, 512)
 	nr := 0
 
 	go CloseOut(src)
@@ -70,7 +73,11 @@ func readAndPrintFrames(src io.ReadCloser) (err error) {
 		if nr > 0 {
 			wStr := buf[0:nr]
 			// send response
-			fmt.Print(string(wStr))
+			//fmt.Printf("%+v\n", string(wStr))
+			lines := strings.Split(string(wStr), "\n")
+			for _, line := range lines {
+				fmt.Printf("%+v\n", line)
+			}
 		}
 	}
 }
