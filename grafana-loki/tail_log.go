@@ -1,15 +1,19 @@
-package grafana_loki
+package main
 
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"time"
 )
 
 func LokiTailLog() {
 	// WebSocket 连接地址
-	url := "ws://192.168.31.154:3100/loki/api/v1/tail?query={worker_id=\"worker-1\"}"
+
+	startTime := time.Now().Unix() - 60
+
+	url := fmt.Sprintf("ws://192.168.31.43:30227/loki/api/v1/tail?query={app_id=\"GTmDE8iPXGSabeuU7qzN5G\",worker_id=\"EBK88vExFCNXQ5E5uqpBqZ\"}&start=%d", startTime)
 
 	// 创建一个空的 HTTP 请求头
 	header := http.Header{}

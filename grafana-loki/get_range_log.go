@@ -1,4 +1,4 @@
-package grafana_loki
+package main
 
 import (
 	"context"
