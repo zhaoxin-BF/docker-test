@@ -108,6 +108,11 @@ func Customer(token, method, url, prompt, class string, c int, totalRequests int
 }
 
 func sendRequest(token, method, url, prompt, class string, c int, times int) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("Customer %d ======== Recover Error: %+v\n", c, r)
+		}
+	}()
 	// 请求体
 	requestBody := RequestBody{
 		Prompt: prompt,
@@ -138,47 +143,52 @@ func sendRequest(token, method, url, prompt, class string, c int, times int) {
 		fmt.Printf("Error sending HTTP request: %v\n", err)
 		return
 	}
-	//endTime := time.Now().Unix()
-	//fmt.Printf("Customer %d, times %d, per_request_time_spent %ds\n", c, times, endTime-startTime)
+	endTime := time.Now().Unix()
+	fmt.Printf("Customer %d, times %d, per_request_time_spent %ds\n", c, times, endTime-startTime)
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Customer %d, times %d, Response status failed, status %d\n", c, times, resp.StatusCode)
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Error reading response body: %v\n", err)
+	go func(resp *http.Response) {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Printf("Recovered in customer %d: %v\n", c, resp)
+			}
+			if err := resp.Body.Close(); err != nil {
+				fmt.Printf("Error closing response body: %v\n", err)
+			}
+		}()
+		if resp.StatusCode != http.StatusOK {
+			fmt.Printf("Customer %d, times %d, Response status failed, status %d\n", c, times, resp.StatusCode)
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Printf("Error reading response body: %v\n", err)
+				return
+			}
+			fmt.Printf("Response body: %s\n", string(body))
 			return
 		}
-		fmt.Printf("Response body: %s\n", string(body))
-		return
-	}
 
-	// 创建用于保存响应 body 的目录
-	outputDir := "Customer-" + strconv.Itoa(c)
-	err = os.Mkdir(outputDir, 0755)
-	if err != nil && !os.IsExist(err) {
-		log.Fatalf("Failed to create output directory: %v", err)
-	}
+		// 创建用于保存响应 body 的目录
+		outputDir := "Customer-" + strconv.Itoa(c)
+		err = os.Mkdir(outputDir, 0755)
+		if err != nil && !os.IsExist(err) {
+			log.Printf("Failed to create output directory: %v", err)
+		}
 
-	// 将响应 body 保存到文件
-	fileName := fmt.Sprintf("response_%d%s", times, fileSuffix[class])
-	filePath := filepath.Join(outputDir, fileName)
-	file, err := os.Create(filePath)
-	if err != nil {
-		log.Fatalf("Failed to create file: %v", err)
-	}
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		log.Fatalf("Failed to write response body to file: %v", err)
-		return
-	}
-	err = file.Close()
-	if err != nil {
-		log.Fatalf("Failed to close file: %v", err)
-		return
-	}
-
-	endTime := time.Now().Unix()
-	fmt.Printf("Customer %d, times %d, Response status: %d, per_request_time_spent %ds, response saved to %s\n", c, times, resp.StatusCode, endTime-startTime, filePath)
+		// 将响应 body 保存到文件
+		fileName := fmt.Sprintf("response_%d%s", times, fileSuffix[class])
+		filePath := filepath.Join(outputDir, fileName)
+		file, err := os.Create(filePath)
+		if err != nil {
+			log.Printf("Failed to create file: %v", err)
+		}
+		_, err = io.Copy(file, resp.Body)
+		if err != nil {
+			log.Printf("Failed to write response body to file: %v", err)
+			return
+		}
+		err = file.Close()
+		if err != nil {
+			log.Printf("Failed to close file: %v", err)
+			return
+		}
+	}(resp)
 }

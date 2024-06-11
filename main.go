@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"github.com/zhaoxin-BF/docker-test/container"
 )
 
 func main() {
@@ -13,14 +13,14 @@ func main() {
 
 	//container.GetcContainer()
 
-	currentTime := time.Now().UTC()
-	twoHoursAgo := currentTime.Add(-2 * time.Hour)
-	timeString := twoHoursAgo.Format("2006-01-02T15:04:05.0Z")
-	fmt.Println(timeString)
+	//currentTime := time.Now().UTC()
+	//twoHoursAgo := currentTime.Add(-2 * time.Hour)
+	//timeString := twoHoursAgo.Format("2006-01-02T15:04:05.0Z")
+	//fmt.Println(timeString)
 
 	fmt.Println("-----------------------------------: print logs")
 	//container.GetContainerLogs()
-	//container.GetStreamLogs()
+	container.GetStreamLogs()
 	//container.ContainerStats()
 	//container.StreamRead()
 	//container.ContainerTop()

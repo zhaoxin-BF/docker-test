@@ -36,7 +36,7 @@ func GetStreamLogs() {
 	}
 	defer apiClient.Close()
 
-	containerID := "f844f487a74aae96bf5f76a2a81cca51e0b255deab6aca9c0fd2d614682f294e"
+	containerID := "021079273as79bb454adde43c4a2bbaf2b1344a7930ef5c89631ce977dee0ae61"
 
 	out, err := apiClient.ContainerLogs(context.Background(), containerID, types.ContainerLogsOptions{
 		ShowStdout: true,
@@ -83,9 +83,10 @@ func readAndPrintFrames(src io.ReadCloser) (err error) {
 }
 
 func CloseOut(src io.ReadCloser) {
-	time.Sleep(1000 * time.Second)
+	time.Sleep(10000 * time.Second)
 	fmt.Println("close container stdout")
 	src.Close()
+	fmt.Println("close container stderr")
 	return
 }
 
