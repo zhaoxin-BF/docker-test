@@ -26,16 +26,15 @@ type rangeValUnit struct {
 
 func LokiGetLogRange() {
 	// Loki 地址
-	lokiURL := "http://192.168.31.154:3100/loki/api/v1/query_range"
+	lokiURL := "http://192.168.31.43:30227/loki/api/v1/query_range"
 
 	fmt.Println(time.Now().Unix() - 3600*45)
 	fmt.Println(time.Now().Unix())
 
 	// 设置查询参数
 	params := fmt.Sprintf("query=%s&start=%d&end=%d&step=%d",
-		"{container_name=\"boreas-nginx\"}",
-		//"{worker_id=\"worker-1\"}",
-		time.Now().Unix()-3600*45,
+		"{worker_id=\"fcGcaFEGoLYfbM5ZH3DRRi\"}",
+		time.Now().Unix()-60*10,
 		time.Now().Unix(),
 		6000)
 
@@ -66,7 +65,7 @@ func LokiGetLogRange() {
 		return
 	}
 
-	//fmt.Printf("%+v", res.Data.Result)
+	fmt.Printf("%+v", res.Data.Result)
 
 	for _, v := range res.Data.Result {
 		fmt.Println(v.Stream)

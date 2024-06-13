@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
@@ -8,12 +9,21 @@ import (
 	"time"
 )
 
+type LogData struct {
+	Streams []Stream `json:"streams"`
+}
+
+type Stream struct {
+	Stream map[string]string `json:"stream"`
+	Values [][]string        `json:"values"`
+}
+
 func LokiTailLog() {
 	// WebSocket 连接地址
 
 	startTime := time.Now().Unix() - 60
 
-	url := fmt.Sprintf("ws://192.168.31.43:30227/loki/api/v1/tail?query={app_id=\"GTmDE8iPXGSabeuU7qzN5G\",worker_id=\"EBK88vExFCNXQ5E5uqpBqZ\"}&start=%d", startTime)
+	url := fmt.Sprintf("ws://192.168.31.43:30227/loki/api/v1/tail?query={app_id=\"GTmDE8iPXGSabeuU7qzN5G\",worker_id=\"fcGcaFEGoLYfbM5ZH3DRRi\"}&start=%d", startTime)
 
 	// 创建一个空的 HTTP 请求头
 	header := http.Header{}
@@ -25,6 +35,8 @@ func LokiTailLog() {
 	}
 	defer conn.Close()
 
+	go CloseOut(conn)
+
 	// 接收并处理消息
 	for {
 		_, message, err := conn.ReadMessage()
@@ -32,7 +44,30 @@ func LokiTailLog() {
 			log.Println("读取消息错误：", err)
 			return
 		}
-		fmt.Println("接收到消息：", string(message))
+
+		res := &LogData{}
+
+		err = json.Unmarshal(message, &res)
+		if err != nil {
+			fmt.Println("反序列化错误:", err)
+			return
+		}
+
+		for _, stream := range res.Streams {
+			fmt.Println(stream.Values[0][1])
+		}
 	}
 	conn.Close()
+}
+
+func CloseOut(conn *websocket.Conn) {
+	time.Sleep(100 * time.Second)
+	err := conn.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = conn.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
