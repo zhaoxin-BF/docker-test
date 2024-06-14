@@ -1,4 +1,4 @@
-package newDir
+package main
 
 import (
 	"fmt"
