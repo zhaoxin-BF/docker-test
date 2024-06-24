@@ -1,4 +1,4 @@
-package container
+package main
 
 import (
 	"context"
@@ -51,6 +51,7 @@ func GetcContainer() {
 	//// 3、run
 	natPort := strconv.Itoa(80) + "/tcp"
 	containerConfig := &container.Config{
+		Cmd:   []string{"sleep", "3600"},
 		Image: "nginx:latest",
 		Env:   []string{"k=v"},
 		ExposedPorts: map[nat.Port]struct{}{
@@ -73,6 +74,7 @@ func GetcContainer() {
 			},
 		},
 		AutoRemove: true,
+		Binds:      nil,
 		Resources: container.Resources{
 			NanoCPUs:   2e9,               // 限制使用2个虚拟CPU
 			Memory:     512 * 1024 * 1024, // 限制使用512MB内存

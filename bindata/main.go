@@ -6,14 +6,15 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"time"
 )
 
 func main() {
-	for _, arg := range sc_bindata.AssetNames() {
-		fmt.Println(arg)
+	for _, asset := range sc_bindata.AssetNames() {
+		fmt.Println(asset)
 	}
 
-	data, err := sc_bindata.Asset("scripts/shell-2.sh")
+	data, err := sc_bindata.Asset("scripts/check-step.sh")
 	if err != nil {
 		fmt.Println(err)
 		// Asset was not found.
@@ -45,14 +46,13 @@ func main() {
 	}
 
 	// 执行脚本
-	cmd := exec.Command(tmpFile.Name())
+	time.Sleep(1 * time.Second)
+	cmd := exec.Command(tmpFile.Name(), "false")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
 	if err != nil {
-		fmt.Println("Error running script:", err)
+		//fmt.Println("Error running script:", err)
 		return
 	}
-
-	fmt.Println("Script executed successfully!")
 }

@@ -14,6 +14,10 @@ build:
 	CGO_ENABLED=0 go build -ldflags "-X main.VERSION=$(APP_VERSION) -X main.PROGRAM=$(TARGET)" \
 		-o ${BUILD_DEST_DIR}/${TARGET} main.go
 
+.PHONY: bindata
+bindata:
+	go generate bindata/plugins/sc-bindata.go
+
 .PHONY: docker
 docker:
 	@echo "build docker image hub.expvent.com.cn:1111/expvent/${TARGET}:${APP_VERSION}"
