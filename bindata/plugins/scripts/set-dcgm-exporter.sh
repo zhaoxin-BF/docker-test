@@ -8,26 +8,23 @@ set -o pipefail
 DST_DIR="/Users/zhaoxin/Workspace/github.com/zhaoxin-BF/docker-test/bindata/temp"
 
 syncDcgmExporter() {
-  local EVERAI_NODE_HOME="$1"
-  echo "EVERAI_NODE_HOME: $EVERAI_NODE_HOME"
+  local EVERAI_EXEC_PATH="/Users/zhaoxin/Workspace/github.com/zhaoxin-BF/docker-test/bindata/plugins"
+  echo "EVERAI_EXEC_PATH: $EVERAI_EXEC_PATH"
 
-  SRC_DIR="$EVERAI_NODE_HOME/dcgm-exporter"
-  echo "SRC_DIR"
+  sudo mkdir -p "${DST_DIR}"
 
-  # cp dir
-  sudo cp -r "$SRC_DIR" "$DST_DIR"
 
-  if [ $? -eq 0 ]; then
-      echo "Successfully copied '$SRC_DIR' to '$DST_DIR'."
-  else
-      echo "Error occurred while copying '$SRC_DIR' to '$DST_DIR'."
-  fi
+  file1="${EVERAI_EXEC_PATH}/scripts/1.x-compatibility-metrics.csv"
+  file2="${EVERAI_EXEC_PATH}/scripts/dcp-metrics-included.csv"
+  file3="${EVERAI_EXEC_PATH}/scripts/default-counters.csv"
+
+  sudo cp "$file1" "$file2" "$file3"  "$DST_DIR"
   return 0
 }
 
 # Call the syncDcgmExporter function with the resource path
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <EVERAI_NODE_HOME>"
+  echo "Usage: $0 <EVERAI_EXEC_PATH>"
   exit 1
 fi
 
