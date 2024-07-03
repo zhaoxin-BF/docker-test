@@ -1,17 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"github.com/joho/godotenv"
 	"os"
 )
 
 func main() {
-	GetcContainer()
+	GetContainerLogsPro()
+	//GetcContainer()
 	//StopContainer()
-	Load()
-	everaiHome := os.Getenv("EVERAI_NODE_HOME")
-	fmt.Println("EVERAI_NODE_HOME:", everaiHome)
+	//Load()
+	//everaiHome := os.Getenv("EVERAI_NODE_HOME")
+	//fmt.Println("EVERAI_NODE_HOME:", everaiHome)
+
 }
 
 func Load() error {

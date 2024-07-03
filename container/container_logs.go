@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"github.com/docker/docker/api/types"
@@ -12,6 +13,41 @@ import (
 	"strings"
 	"time"
 )
+
+func GetContainerLogsPro() {
+	apiClient, err := client.NewClientWithOpts(client.WithVersion("1.43"))
+	if err != nil {
+		panic(err)
+	}
+	defer apiClient.Close()
+
+	currentTime := time.Now().UTC()
+	twoHoursAgo := currentTime.Add(-10 * time.Minute)
+	timeString := twoHoursAgo.Format("2006-01-02T15:04:05.0Z")
+
+	containerId := "11de5f7fb4d3aee753412d4bf7c71dc17f95013770225dd806908f0eb8f0cfe0-1"
+	var out io.ReadCloser
+	out, err = apiClient.ContainerLogs(context.Background(), containerId, container.LogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+		Follow:     false,
+		Since:      timeString,
+	})
+	if err != nil {
+		fmt.Printf("failed to retrieve container logs, containerId: %s", containerId)
+		return
+	}
+	fmt.Printf("successfully retrieved container logs, containerId: %s", containerId)
+
+	defer out.Close()
+
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, out)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(buf.String())
+}
 
 func GetContainerLogs() {
 	apiClient, err := client.NewClientWithOpts(client.WithVersion("1.43"))

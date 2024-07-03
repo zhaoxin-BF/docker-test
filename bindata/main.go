@@ -6,12 +6,26 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 )
 
 func main() {
+	pwdDir := "/Users/zhaoxin/Workspace/github.com/zhaoxin-BF/docker-test/bindata/temp"
 	for _, asset := range sc_bindata.AssetNames() {
-		fmt.Println(asset)
+		target := filepath.Join(pwdDir, asset)
+		targetPath := filepath.Dir(target)
+		if err := Mkdir(targetPath); err != nil {
+			fmt.Println("Mkdir err:", err)
+			return
+		}
+		content, err := sc_bindata.Asset(asset)
+		if err != nil {
+			return
+		}
+		if err := WriteFile(target, content); err != nil {
+			return
+		}
 	}
 
 	data, err := sc_bindata.Asset("scripts/check-step.sh")
@@ -55,4 +69,18 @@ func main() {
 		//fmt.Println("Error running script:", err)
 		return
 	}
+}
+
+func WriteFile(filename string, content []byte) error {
+	err := os.WriteFile(filename, content, 0755)
+	return err
+}
+
+func Mkdir(path string) error {
+	err := os.Mkdir(path, 0755)
+	if err != nil && os.IsExist(err) {
+		// If the error is that the directory already exists, return nil
+		return nil
+	}
+	return err
 }
