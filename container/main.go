@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	GetContainerLogsPro()
+	ConatinerExec()
+	//GetContainerLogsPro()
 	//GetcContainer()
 	//StopContainer()
 	//Load()

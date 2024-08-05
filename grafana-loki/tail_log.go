@@ -23,7 +23,7 @@ func LokiTailLog() {
 
 	startTime := time.Now().Unix() - 60
 
-	url := fmt.Sprintf("ws://192.168.31.43:30227/loki/api/v1/tail?query={app_id=\"GTmDE8iPXGSabeuU7qzN5G\",worker_id=\"fcGcaFEGoLYfbM5ZH3DRRi\"}&start=%d", startTime)
+	url := fmt.Sprintf("ws://192.168.31.43:30227/loki/api/v1/tail?query={app_id=\"XAjv5H4HVk7SbZJaNMjJhy\",worker_id=\"2VxrvwTdrTxn4gVQS56SuW\"}&start=%d", startTime)
 
 	// 创建一个空的 HTTP 请求头
 	header := http.Header{}

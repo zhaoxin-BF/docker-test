@@ -5,13 +5,9 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -41,6 +37,7 @@ func init() {
 func main() {
 	var clientCount, requestsPerClient int
 	var token, url, method, prompt, class string
+	var save bool
 	flag.IntVar(&clientCount, "client-count", 0, "The number of concurrent customers")
 	flag.IntVar(&requestsPerClient, "requests-per-client", 0, "The number of individual customer requests")
 	flag.StringVar(&class, "class", "chats", "The request class chats/images")
@@ -48,6 +45,7 @@ func main() {
 	flag.StringVar(&method, "method", "POST", "request method")
 	flag.StringVar(&prompt, "prompt", "", "prompt")
 	flag.StringVar(&token, "token", "", "token")
+	flag.BoolVar(&save, "save", true, "whether save response")
 	flag.Parse()
 
 	log.Printf("Executing with parameters: clientCount=%d, requestsPerClient=%d, url=%s, method=%s, prompt=%s", clientCount, requestsPerClient, url, method, prompt)
@@ -84,7 +82,7 @@ func main() {
 		wg.Add(1)
 		go func(c int) {
 			defer wg.Done()
-			Customer(token, method, url, prompt, class, c, requestsPerClient)
+			Customer(token, method, url, prompt, class, c, requestsPerClient, save)
 		}(i)
 	}
 
@@ -96,18 +94,29 @@ func main() {
 	fmt.Printf("======== Total Time Spent：%+vs ========\n", endTime-startTime)
 }
 
-func Customer(token, method, url, prompt, class string, c int, totalRequests int) {
+func Customer(token, method, url, prompt, class string, c int, totalRequests int, save bool) {
+	// 发送请求
+	transport := &http.Transport{
+		MaxIdleConns:        5000,
+		MaxIdleConnsPerHost: 5000,
+		IdleConnTimeout:     10 * time.Second,
+	}
+
+	client := &http.Client{
+		//Timeout:   300 * time.Second,
+		Transport: transport,
+	}
 	// send request
-	startTime := time.Now().Unix()
+	//startTime := time.Now().Unix()
 	for i := 0; i < totalRequests; i++ {
-		sendRequest(token, method, url, prompt, class, c, i)
+		sendRequest(client, token, method, url, prompt, class, c, i, save)
 	}
 	// wait
-	endTime := time.Now().Unix()
-	fmt.Printf("Customer %d ======== Total time spent：%+vs ========\n", c, endTime-startTime)
+	//endTime := time.Now().Unix()
+	//fmt.Printf("Customer %d ======== Total time spent：%+vs ========\n", c, endTime-startTime)
 }
 
-func sendRequest(token, method, url, prompt, class string, c int, times int) {
+func sendRequest(client *http.Client, token, method, url, prompt, class string, c int, times int, save bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("Customer %d ======== Recover Error: %+v\n", c, r)
@@ -136,8 +145,6 @@ func sendRequest(token, method, url, prompt, class string, c int, times int) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", token)
 
-	// 发送请求
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error sending HTTP request: %v\n", err)
@@ -145,50 +152,56 @@ func sendRequest(token, method, url, prompt, class string, c int, times int) {
 	}
 	endTime := time.Now().Unix()
 	fmt.Printf("Customer %d, times %d, per_request_time_spent %ds\n", c, times, endTime-startTime)
-
-	go func(resp *http.Response) {
-		defer func() {
-			if r := recover(); r != nil {
-				fmt.Printf("Recovered in customer %d: %v\n", c, resp)
-			}
-			if err := resp.Body.Close(); err != nil {
-				fmt.Printf("Error closing response body: %v\n", err)
-			}
-		}()
-		if resp.StatusCode != http.StatusOK {
-			fmt.Printf("Customer %d, times %d, Response status failed, status %d\n", c, times, resp.StatusCode)
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				fmt.Printf("Error reading response body: %v\n", err)
-				return
-			}
-			fmt.Printf("Response body: %s\n", string(body))
-			return
-		}
-
-		// 创建用于保存响应 body 的目录
-		outputDir := "Customer-" + strconv.Itoa(c)
-		err = os.Mkdir(outputDir, 0755)
-		if err != nil && !os.IsExist(err) {
-			log.Printf("Failed to create output directory: %v", err)
-		}
-
-		// 将响应 body 保存到文件
-		fileName := fmt.Sprintf("response_%d%s", times, fileSuffix[class])
-		filePath := filepath.Join(outputDir, fileName)
-		file, err := os.Create(filePath)
-		if err != nil {
-			log.Printf("Failed to create file: %v", err)
-		}
-		_, err = io.Copy(file, resp.Body)
-		if err != nil {
-			log.Printf("Failed to write response body to file: %v", err)
-			return
-		}
-		err = file.Close()
-		if err != nil {
-			log.Printf("Failed to close file: %v", err)
-			return
-		}
-	}(resp)
+	resp.Body.Close()
+	// 进一步确保连接被关闭
+	if resp.Body != nil {
+		resp.Body.Close()
+	}
+	//if save {
+	//	go func(resp *http.Response) {
+	//		defer func() {
+	//			if r := recover(); r != nil {
+	//				fmt.Printf("Recovered in customer %d: %v\n", c, resp)
+	//			}
+	//			if err := resp.Body.Close(); err != nil {
+	//				fmt.Printf("Error closing response body: %v\n", err)
+	//			}
+	//		}()
+	//		if resp.StatusCode != http.StatusOK {
+	//			fmt.Printf("Customer %d, times %d, Response status failed, status %d\n", c, times, resp.StatusCode)
+	//			body, err := ioutil.ReadAll(resp.Body)
+	//			if err != nil {
+	//				fmt.Printf("Error reading response body: %v\n", err)
+	//				return
+	//			}
+	//			fmt.Printf("Response body: %s\n", string(body))
+	//			return
+	//		}
+	//
+	//		// 创建用于保存响应 body 的目录
+	//		outputDir := "Customer-" + strconv.Itoa(c)
+	//		err = os.Mkdir(outputDir, 0755)
+	//		if err != nil && !os.IsExist(err) {
+	//			log.Printf("Failed to create output directory: %v", err)
+	//		}
+	//
+	//		// 将响应 body 保存到文件
+	//		fileName := fmt.Sprintf("response_%d%s", times, fileSuffix[class])
+	//		filePath := filepath.Join(outputDir, fileName)
+	//		file, err := os.Create(filePath)
+	//		if err != nil {
+	//			log.Printf("Failed to create file: %v", err)
+	//		}
+	//		_, err = io.Copy(file, resp.Body)
+	//		if err != nil {
+	//			log.Printf("Failed to write response body to file: %v", err)
+	//			return
+	//		}
+	//		err = file.Close()
+	//		if err != nil {
+	//			log.Printf("Failed to close file: %v", err)
+	//			return
+	//		}
+	//	}(resp)
+	//}
 }

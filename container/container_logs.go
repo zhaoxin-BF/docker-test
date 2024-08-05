@@ -25,12 +25,12 @@ func GetContainerLogsPro() {
 	twoHoursAgo := currentTime.Add(-10 * time.Minute)
 	timeString := twoHoursAgo.Format("2006-01-02T15:04:05.0Z")
 
-	containerId := "11de5f7fb4d3aee753412d4bf7c71dc17f95013770225dd806908f0eb8f0cfe0-1"
+	containerId := "ef44da5a7878"
 	var out io.ReadCloser
 	out, err = apiClient.ContainerLogs(context.Background(), containerId, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
-		Follow:     false,
+		Follow:     true,
 		Since:      timeString,
 	})
 	if err != nil {
