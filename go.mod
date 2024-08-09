@@ -26,6 +26,7 @@ require (
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitly/go-simplejson v0.5.0 // indirect
+	github.com/buger/goterm v1.0.4 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
@@ -77,6 +78,7 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/micro/cli/v2 v2.1.2 // indirect
 	github.com/micro/go-micro/v2 v2.9.1 // indirect
 	github.com/miekg/dns v1.1.27 // indirect
@@ -90,6 +92,7 @@ require (
 	github.com/nats-io/nats.go v1.9.2 // indirect
 	github.com/nats-io/nkeys v0.1.4 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
