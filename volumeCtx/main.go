@@ -40,5 +40,4 @@ func main() {
 	for i := 0; i < len(data1); i++ {
 		table.Append([]string{fmt.Sprintf("%v", data1[i]), fmt.Sprintf("%v", data2[i])})
 	}
-
 }

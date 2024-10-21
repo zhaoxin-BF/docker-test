@@ -21,17 +21,18 @@ func GetContainerLogsPro() {
 	}
 	defer apiClient.Close()
 
-	currentTime := time.Now().UTC()
-	twoHoursAgo := currentTime.Add(-10 * time.Minute)
-	timeString := twoHoursAgo.Format("2006-01-02T15:04:05.0Z")
+	//currentTime := time.Now().UTC()
+	//twoHoursAgo := currentTime.Add(-10 * time.Minute)
+	//timeString := twoHoursAgo.Format("2006-01-02T15:04:05.0Z")
 
-	containerId := "ef44da5a7878"
+	containerId := "bc2c1921b609s"
 	var out io.ReadCloser
 	out, err = apiClient.ContainerLogs(context.Background(), containerId, container.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
-		Follow:     true,
-		Since:      timeString,
+		Tail:       "20",
+		//Follow:     true,
+		//Since:      timeString,
 	})
 	if err != nil {
 		fmt.Printf("failed to retrieve container logs, containerId: %s", containerId)
@@ -129,7 +130,7 @@ func CloseOut(src io.ReadCloser) {
 //
 
 func readAndPrintFramesPro(src io.ReadCloser) (err error) {
-	buf := make([]byte, 32*1024)
+	buf := make([]byte, 32*1024*1024)
 	nr := 0
 
 	timeout := time.After(5 * time.Minute) // set timeout

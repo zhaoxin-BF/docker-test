@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// 文件路径
-	filePath := "/Users/zhaoxin/Workspace/github.com/zhaoxin-BF/docker-test/everai-v3/helm-v3.4.2-linux-amd64.tar.gz"
+	filePath := "/Users/zhaoxin/Workspace/github.com/zhaoxin-BF/docker-test/chat-zhuiyi/response.txt"
 
 	// 上传 URL
 	uploadURL := "https://everai.expvent.com/r/apps/everai-test-go-003/upload"

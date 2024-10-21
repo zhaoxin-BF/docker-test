@@ -84,7 +84,7 @@ func main() {
     <header class="header-cs"> </header>
     <div class="content">
       <div >
-        <h3>2024年08月28日01:00~05:00 上海二可用区B传输线路优化割接</h3>
+        <h2>2024年08月28日01:00~05:00 上海二可用区B传输线路优化割接</h2>
         <hr style="border: 1px solid #ccc; margin: 10px 0;"> <!-- 添加分割横线 -->
       </div>
         <div class="left-align">
@@ -100,7 +100,7 @@ func main() {
     	</div>
     </div>
     <footer>
-      <p>访问<a href="https://www.ucloud.cn">EverAI官网</a></p>
+      <p>访问<a href="https://everai.expvent.com/">EverAI官网</a></p>
       <p>Copyright © 2022-2024 Expvent 上海幂进信息科技有限公司</p>
     </footer>
   </div>
