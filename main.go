@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/zhaoxin-BF/docker-test/container"
+	//"github.com/zhaoxin-BF/docker-test/container"
+	"github.com/zhaoxin-BF/docker-test/device_resource_new"
 )
 
 func main() {
@@ -20,7 +21,7 @@ func main() {
 
 	fmt.Println("-----------------------------------: print logs")
 	//container.GetContainerLogs()
-	container.GetStreamLogs()
+	//container.GetStreamLogs()
 	//container.ContainerStats()
 	//container.StreamRead()
 	//container.ContainerTop()
@@ -29,6 +30,7 @@ func main() {
 
 	// get cpu info
 	//device_resource_new.GetCPUInfo()
+	device_resource_new.GetGPUInfo()
 
 	//fmt.Println("hello world")
 

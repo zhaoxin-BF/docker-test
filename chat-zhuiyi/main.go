@@ -104,7 +104,6 @@ func sendRequest(client *http.Client, url, method string, headers http.Header, d
 		return 0
 	}
 	defer resp.Body.Close()
-
 	return resp.StatusCode
 }
 
@@ -128,7 +127,7 @@ type Req struct {
 	UseTime int64
 }
 
-func runRequests(n, c int, url, token, body, method string) {
+func runRequests(n, c int, url, token, body, method string, sleepMs int) {
 	//url := "https://everai.expvent.com/r/apps/everai-bowen-serve/v1/chat/completions"
 	//url = "https://everai.expvent.com/r/apps/zhuiyi-bowen-serve/v1/chat/completions" // 追一
 	//token = "everai_DmCZ8VZhwc6Dx4kX7uHUiO"
@@ -163,6 +162,8 @@ func runRequests(n, c int, url, token, body, method string) {
 		go func(code chan Req, c, requests int) {
 			defer wg.Done()
 			for i := 1; i <= requests; i++ {
+				// 后进行休眠
+				time.Sleep(time.Duration(sleepMs) * time.Millisecond)
 				startTime := time.Now()
 				statusCode := sendRequest(client, url, method, headers, data, c, i)
 				endTime := time.Now()
@@ -258,12 +259,14 @@ func init() {
 func main() {
 	var clientCount, requestsPerClient int
 	var token, url, method, body string
+	var sleepMs int
 	flag.IntVar(&clientCount, "client-count", 0, "The number of concurrent customers")
 	flag.IntVar(&requestsPerClient, "requests-per-client", 0, "The number of individual customer requests")
 	flag.StringVar(&url, "url", "", "request url")
 	flag.StringVar(&method, "method", "POST", "request method")
-	flag.StringVar(&body, "body", "", "body")
-	flag.StringVar(&token, "token", "", "token")
+	flag.StringVar(&body, "body", "", "request body")
+	flag.StringVar(&token, "token", "", "token for authentication")
+	flag.IntVar(&sleepMs, "sleep-ms", 0, "sleep time before per request (ms)")
 	flag.Parse()
 
 	log.Printf("Executing with parameters: clientCount=%d, requestsPerClient=%d, url=%s, method=%s, body=%s", clientCount, requestsPerClient, url, method, body)
@@ -285,5 +288,5 @@ func main() {
 	}
 
 	fmt.Println("Starting requests...")
-	runRequests(requestsPerClient, clientCount, url, token, body, method)
+	runRequests(requestsPerClient, clientCount, url, token, body, method, sleepMs)
 }
