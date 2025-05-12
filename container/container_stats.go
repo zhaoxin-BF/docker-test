@@ -25,14 +25,14 @@ type CollectorMetrics struct {
 	Timestamp        time.Time
 }
 
-func ContainerStats() {
+func ContainerStats(Id string) {
 	apiClient, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		panic(err)
 	}
 	defer apiClient.Close()
 
-	containerID := "715027f758abf13bb86e7277684327f2775a9b2a9b962a6bad4a27792def6092"
+	containerID := Id
 
 	containerStats, err := apiClient.ContainerStats(context.Background(), containerID, false)
 	if err != nil {
@@ -54,6 +54,7 @@ func ContainerStats() {
 
 // 处理types.StatsJSON数据
 func getCollectorMetrics(stats *types.StatsJSON) *CollectorMetrics {
+	fmt.Printf("%+v\n", stats)
 	var (
 		memPercent        = 0.0
 		cpuPercent        = 0.0
@@ -78,6 +79,8 @@ func getCollectorMetrics(stats *types.StatsJSON) *CollectorMetrics {
 	mem = float64(stats.MemoryStats.Usage)
 	memLimit = float64(stats.MemoryStats.Limit)
 	if stats.MemoryStats.Limit != 0 {
+		fmt.Println("memoryLimit: ", stats.MemoryStats.Limit)
+		fmt.Println("memoryUsage: ", stats.MemoryStats.Usage)
 		memPercent = float64(stats.MemoryStats.Usage) / float64(stats.MemoryStats.Limit) * 100.0
 	}
 	//network
